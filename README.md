@@ -11,7 +11,7 @@ Simple web page permitting you to view your Twitch whispers while live.
     - The Twitch UI uses gql for this, so there probably isn't any documented way.
   - If not, retain only for the current session
   - It'll be wonky anyway w/o that query, so just accept the wonk
-- Mark the window Urgent on new whisper (optionally)
+- Mark the window Urgent on new whisper (if possible)
 - Will be available on GH Pages
   - Use ComfyJS
   - Get dedicated client ID? Or use TMI?
