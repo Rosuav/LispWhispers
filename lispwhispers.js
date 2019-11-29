@@ -30,7 +30,8 @@ async function init()
 			const info = await (await fetch("https://id.twitch.tv/oauth2/validate",
 				{headers: {"Authorization": "OAuth " + token}})).json();
 			window.localStorage.setItem("lispwhispers_username", info.login);
-			console.log("Logged in as", info.login);
+			if (!info.login) token = null;
+			else console.log("Logged in as", info.login);
 		}
 	}
 	else token = stored_token;
