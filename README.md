@@ -18,3 +18,4 @@ Simple web page permitting you to view your Twitch whispers while live.
   - Store auth in LocalStorage (and tell the user this)
   - Check the required scopes
   - Use Choc Factory
+- For local testing, will need a web server (eg `python3 -m http.server`).
