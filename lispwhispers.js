@@ -17,6 +17,7 @@ ComfyJS.onError = error => {
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
+	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
 	if (extra.messageEmotes)
 	{
 		//First, parse the weird mapping into a sortable array of emotes.
@@ -83,4 +84,9 @@ async function init()
 	ComfyJS.Init(username, token);
 }
 
-init();
+if (window.location.hash === "#hack")
+{
+	const data = window.localStorage.getItem("last_received");
+	if (data) {const {user, message, flags, self, extra} = JSON.parse(data); ComfyJS.onWhisper(user, message, flags, self, extra);}
+}
+else init();
