@@ -2,6 +2,9 @@ import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
 const {A} = choc;
 
+let active = false; //True if we (appear to) have a connection, false on critical error
+ComfyJS.onChatMode = () => active = true;
+
 ComfyJS.onError = error => {
 	if (error === "Login authentication failed")
 	{
@@ -40,6 +43,7 @@ async function init()
 		const here = window.location.origin + window.location.pathname;
 		const url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=cg9pw2xmxgdlqeqfk7yn8rxrhxonpj&redirect_uri=${here}&scope=chat:read+whispers:read+whispers:edit`;
 		set_content("main", A({href: url, target: "_blank"}, "Authenticate"));
+		active = false;
 		return;
 	}
 	let username = window.localStorage.getItem("lispwhispers_username");
