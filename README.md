@@ -19,3 +19,4 @@ Simple web page permitting you to view your Twitch whispers while live.
   - Check the required scopes
   - Use Choc Factory
 - For local testing, will need a web server (eg `python3 -m http.server`).
+- TODO: Also show highlighted messages in the streamer's channel?
