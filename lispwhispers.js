@@ -2,6 +2,16 @@ import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
 const {A} = choc;
 
+ComfyJS.onError = error => {
+	if (error === "Login authentication failed")
+	{
+		window.localStorage.removeItem("lispwhispers_access_key");
+		init();
+		return;
+	}
+	console.error("Error:", error);
+};
+
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	console.log("Received whisper from", user);
 	console.log(message);
