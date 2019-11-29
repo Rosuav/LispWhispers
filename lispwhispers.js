@@ -1,6 +1,6 @@
 import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
-const {A, LI, SPAN} = choc;
+const {A, IMG, LI, SPAN} = choc;
 
 let active = false; //True if we (appear to) have a connection, false on critical error
 ComfyJS.onChatMode = () => active = true;
@@ -16,12 +16,40 @@ ComfyJS.onError = error => {
 };
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
-	console.log("Received whisper from", user);
-	console.log(message, flags, self, extra);
+	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
+	if (extra.messageEmotes)
+	{
+		//First, parse the weird mapping into a sortable array of emotes.
+		let emotes = [];
+		for (let emote in extra.messageEmotes) for (let position of extra.messageEmotes[emote])
+		{
+			const [from, to] = position.split("-");
+			emotes.push({position: +from, length: to-from+1, emote: emote});
+		}
+		emotes.sort((a,b) => a.position - b.position);
+		//This is now very similar to the way Twitch gives us the info in the
+		//first place - sorted by position, not emote.
+		let text = message, position = 0;
+		message = [];
+		for (let emote of emotes)
+		{
+			if (emote.position > position)
+			{
+				message.push(text.slice(0, emote.position - position));
+				text = text.slice(emote.position - position);
+				position = emote.position;
+			}
+			message.push(IMG({src: `https://static-cdn.jtvnw.net/emoticons/v1/${emote.emote}/1.0`,
+					alt: text.slice(0, emote.length)}));
+			text = text.slice(emote.length);
+			position += emote.length;
+		}
+		message.push(text);
+	}
 	document.getElementById("messages").appendChild(LI([
 		SPAN({className: "username"}, user),
 		": ",
-		message, //TODO: Replace emotes with images
+		SPAN({className: "message"}, message),
 	]));
 };
 
