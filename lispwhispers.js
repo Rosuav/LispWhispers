@@ -1,6 +1,6 @@
 import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
-const {A} = choc;
+const {A, LI, SPAN} = choc;
 
 let active = false; //True if we (appear to) have a connection, false on critical error
 ComfyJS.onChatMode = () => active = true;
@@ -17,7 +17,12 @@ ComfyJS.onError = error => {
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	console.log("Received whisper from", user);
-	console.log(message);
+	console.log(message, flags, self, extra);
+	document.getElementById("messages").appendChild(LI([
+		SPAN({className: "username"}, user),
+		": ",
+		message, //TODO: Replace emotes with images
+	]));
 };
 
 async function init()
