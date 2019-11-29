@@ -36,7 +36,7 @@ async function init()
 	else token = stored_token;
 	if (!token)
 	{
-		const here = window.location.origin + window.location.path;
+		const here = window.location.origin + window.location.pathname;
 		const url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=cg9pw2xmxgdlqeqfk7yn8rxrhxonpj&redirect_uri=${here}&scope=chat:read+whispers:read+whispers:edit`;
 		set_content("main", A({href: url, target: "_blank"}, "Authenticate"));
 		return;
