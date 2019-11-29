@@ -47,13 +47,12 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 		}
 		message.push(text);
 	}
-	const li = LI([
+	document.getElementById("messages").appendChild(LI([
 		SPAN({className: "username"}, user),
 		": ",
 		SPAN({className: "message"}, message),
-	]);
-	document.getElementById("messages").appendChild(li);
-	li.scrollIntoView(false);
+	]));
+	setTimeout(() => document.getElementById("send_whisper").scrollIntoView(false), 10);
 };
 
 async function init()
