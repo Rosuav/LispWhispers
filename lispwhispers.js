@@ -41,7 +41,7 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 				position = emote.position;
 			}
 			message.push(IMG({src: `https://static-cdn.jtvnw.net/emoticons/v1/${emote.emote}/1.0`,
-					alt: text.slice(0, emote.length)}));
+					alt: text.slice(0, emote.length), title: text.slice(0, emote.length)}));
 			text = text.slice(emote.length);
 			position += emote.length;
 		}
