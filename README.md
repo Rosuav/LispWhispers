@@ -20,3 +20,19 @@ Simple web page permitting you to view your Twitch whispers while live.
   - Use Choc Factory
 - For local testing, will need a web server (eg `python3 -m http.server`).
 - TODO: Also show highlighted messages in the streamer's channel?
+- Sending of whispers.
+  - Maintain a list of likely recipients
+    - By default, add to recipients when a whisper arrives.
+    - By default, add to recipients when you manually send.
+    - By default, zero permanent recipients; can prepopulate the list.
+    - By default, all recipient names are sorted affabeck together.
+      - Alternative: Prepopulated ones come first (in an optgroup) and the
+        names of those whispering you are in a separate optgroup
+      - Alternative: Prepopulated names are kept in the order you put them,
+        and recipient names are in order of most recently seen.
+    - wreply semantics: incoming whisper automatically switches destination.
+      - Prompt if you send a whisper within, say, 500ms of such a switch
+        (only if it actually changed the name, of course).
+  - Quick re-send in case you sent to the wrong name (or you're multisending).
+  - As there's no server, all this configuration will be kept in LocalStorage.
+    Offer a way to download a backup file, or to copy a backup to clipboard.
