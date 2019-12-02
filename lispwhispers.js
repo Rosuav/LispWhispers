@@ -89,6 +89,12 @@ document.getElementById("send_whisper").onsubmit = function(e) {
 	this.elements.message.focus();
 };
 
+/* TODO: Config dialog. Probably use <dialog> itself.
+
+Needs to show all the config settings currently used, and allow easy backup and restore.
+Perhaps, as changes are made, it should dynamically show the JSON in a textarea??
+*/
+
 async function init()
 {
 	const stored_token = window.localStorage.getItem("lispwhispers_access_key");
