@@ -9,17 +9,19 @@
 }
 
 /* Can this be generalized? If so, have all of them invisible except the
-ones from the chosen channel. (There'll be an "all" or "merged" channel.)
-<input type=radio name=channel value=mustardmine>Mustard Mine <input type=radio name=channel value=loudlotus> Loud Lotus
+ones from the chosen channel. The comma-terminated lines need to be generated
+for every channel that has a radio button; the rest stays the same.
 
-input:checked[value=loudlotus] ~ ul li[class~=channel-loudlotus] {
-	background: blue;
-	color: white;
-}
+<input type=radio checked name=channel id=merged><label for=merged>(all)</label>
+<input type=radio name=channel id=rb-mustardmine><label for=rb-mustardmine>Mustard Mine</label>
+<input type=radio name=channel id=rb-loudlotus><label for=rb-loudlotus>Loud Lotus</label>
 
-input:checked[value=mustardmine] ~ ul li[class~=channel-mustardmine] {
-	background: green;
-	color: white;
+#messages li {display: none;}
+
+#rb-loudlotus:checked ~ ul li[class~=channel-loudlotus],
+#rb-mustardmine:checked ~ ul li[class~=channel-mustardmine],
+#merged:checked ~ ul li {
+	display: list-item;
 }
 */
 
