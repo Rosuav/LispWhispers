@@ -27,7 +27,9 @@ Simple web page permitting you to view your Twitch whispers while live.
     - By default, zero permanent recipients; can prepopulate the list.
     - By default, all recipient names are sorted affabeck together.
       - Alternative: Prepopulated ones come first (in an optgroup) and the
-        names of those whispering you are in a separate optgroup
+        names of those whispering you are in a separate optgroup. Not in the
+	current HTML standards, so this can wait for now. Maybe a disabled
+	element to separate them will be sufficient?
       - Alternative: Prepopulated names are kept in the order you put them,
         and recipient names are in order of most recently seen.
     - wreply semantics: incoming whisper automatically switches destination.

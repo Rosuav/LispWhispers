@@ -1,11 +1,20 @@
 import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
-const {A, IMG, LI, SPAN} = choc;
+const {A, IMG, LI, OPTION, OPTGROUP, SPAN} = choc;
 
 let config = {};
 try {config = JSON.parse(window.localStorage.getItem("lispwhispers_config")) || {};} catch (e) { }
 if (typeof config !== "object") config = {};
 function save_config() {window.localStorage.setItem("lispwhispers_config", JSON.stringify(config));}
+if (!config.recent_recip) config.recent_recip = [];
+
+function update_recipient_list() {
+	let recip = config.standard_recip || [];
+	let map = {}; recip.forEach(r => map[r] = 1);
+	config.recent_recip.forEach(r => map[r] || recip.push(r));
+	if (config.sort_recipients) recip.sort();
+	set_content("#recipients", recip.map(OPTION));
+}
 
 let active = false; //True if we (appear to) have a connection, false on critical error
 ComfyJS.onChatMode = () => active = true;
@@ -23,6 +32,11 @@ ComfyJS.onError = error => {
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
+	config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== user.toLowerCase());
+	if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
+	config.recent_recip.push(user);
+	update_recipient_list();
+
 	if (extra.messageEmotes)
 	{
 		//First, parse the weird mapping into a sortable array of emotes.
