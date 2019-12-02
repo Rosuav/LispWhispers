@@ -8,6 +8,21 @@
 	vertical-align: middle;
 }
 
+/* Can this be generalized? If so, have all of them invisible except the
+ones from the chosen channel. (There'll be an "all" or "merged" channel.)
+<input type=radio name=channel value=mustardmine>Mustard Mine <input type=radio name=channel value=loudlotus> Loud Lotus
+
+input:checked[value=loudlotus] ~ ul li[class~=channel-loudlotus] {
+	background: blue;
+	color: white;
+}
+
+input:checked[value=mustardmine] ~ ul li[class~=channel-mustardmine] {
+	background: green;
+	color: white;
+}
+*/
+
 .username {
 	font-weight: bold;
 }
