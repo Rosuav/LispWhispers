@@ -29,15 +29,20 @@ ComfyJS.onError = error => {
 	console.error("Error:", error);
 };
 
+function add_recipient(user) {
+	//TODO: If you send, retain case from a previously-seen entry.
+	//But if you receive, override previously-seen entries with the
+	//case from the new one (as currently happens).
+	config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== user.toLowerCase());
+	if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
+	config.recent_recip.push(user);
+	update_recipient_list();
+}
+
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
-	if (!self) { //Don't add self to recent recipients :)
-		config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== user.toLowerCase());
-		if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
-		config.recent_recip.push(user);
-		update_recipient_list();
-	}
+	if (!self) add_recipient(user); //Don't add self to recent recipients :)
 
 	if (extra.messageEmotes)
 	{
@@ -87,6 +92,7 @@ document.getElementById("send_whisper").onsubmit = function(e) {
 	//TODO: Retain the message somewhere for quick-resend (eg if recip wrong)
 	this.elements.message.value = "";
 	this.elements.message.focus();
+	add_recipient(recip);
 };
 
 /* TODO: Config dialog. Probably use <dialog> itself.
