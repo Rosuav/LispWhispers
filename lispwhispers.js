@@ -32,10 +32,12 @@ ComfyJS.onError = error => {
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
-	config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== user.toLowerCase());
-	if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
-	config.recent_recip.push(user);
-	update_recipient_list();
+	if (!self) { //Don't add self to recent recipients :)
+		config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== user.toLowerCase());
+		if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
+		config.recent_recip.push(user);
+		update_recipient_list();
+	}
 
 	if (extra.messageEmotes)
 	{
@@ -66,12 +68,25 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 		}
 		message.push(text);
 	}
-	document.getElementById("messages").appendChild(LI([
+	document.getElementById("messages").appendChild(LI({className: "channel-" + extra.channel}, [
 		SPAN({className: "username"}, user),
 		": ",
 		SPAN({className: "message"}, message),
 	]));
 	setTimeout(() => document.getElementById("send_whisper").scrollIntoView(false), 10);
+};
+
+document.getElementById("send_whisper").onsubmit = function(e) {
+	e.preventDefault();
+	const recip = this.elements.recipient.value;
+	const msg = this.elements.message.value;
+	if (recip === "" || msg === "") return;
+	//TODO: if " " in recip: error
+	//TODO: if msg too long, error
+	ComfyJS.Whisper(msg, recip);
+	//TODO: Retain the message somewhere for quick-resend (eg if recip wrong)
+	this.elements.message.value = "";
+	this.elements.message.focus();
 };
 
 async function init()
