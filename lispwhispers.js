@@ -2,6 +2,11 @@ import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
 const {A, IMG, LI, SPAN} = choc;
 
+let config = {};
+try {config = JSON.parse(window.localStorage.getItem("lispwhispers_config")) || {};} catch (e) { }
+if (typeof config !== "object") config = {};
+function save_config() {window.localStorage.setItem("lispwhispers_config", JSON.stringify(config));}
+
 let active = false; //True if we (appear to) have a connection, false on critical error
 ComfyJS.onChatMode = () => active = true;
 
