@@ -1,6 +1,6 @@
 import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
 import "./comfy.js"; const ComfyJS = window.ComfyJS;
-const {A, IMG, LI, OPTION, OPTGROUP, SPAN} = choc;
+const {A, IMG, INPUT, LABEL, LI, OPTION, OPTGROUP, SPAN} = choc;
 
 let config = {};
 try {config = JSON.parse(window.localStorage.getItem("lispwhispers_config")) || {};} catch (e) { }
@@ -29,20 +29,42 @@ ComfyJS.onError = error => {
 	console.error("Error:", error);
 };
 
-function add_recipient(user) {
+const msgs = document.getElementById("messages");
+function scroll_down() {setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);};
+
+function filter_messages(username) {
+	document.querySelectorAll("#messages li").forEach(li =>
+		li.classList.toggle("hidden", !!(li.dataset.channel && li.dataset.channel !== username)));
+	scroll_down();
+}
+
+document.getElementById("merged").onchange = () => {
+	document.querySelectorAll("#messages li").forEach(li => li.classList.remove("hidden"));
+	scroll_down();
+}
+
+const user_filters = {};
+function add_recipient(displayname, username) {
 	//TODO: If you send, retain case from a previously-seen entry.
 	//But if you receive, override previously-seen entries with the
 	//case from the new one (as currently happens).
-	config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== user.toLowerCase());
+	config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== displayname.toLowerCase());
 	if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
-	config.recent_recip.push(user);
+	config.recent_recip.push(displayname);
+	if (!user_filters[username])
+	{
+		document.querySelector("nav").appendChild(user_filters[username] = LABEL([
+			INPUT({type: "radio", name: "channel", onchange: () => filter_messages(username)}),
+			displayname,
+		]));
+	}
 	update_recipient_list();
 }
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
-	if (!self) add_recipient(user); //Don't add self to recent recipients :)
+	if (!self) add_recipient(user, extra.channel); //Don't add self to recent recipients :)
 
 	if (extra.messageEmotes)
 	{
@@ -73,13 +95,12 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 		}
 		message.push(text);
 	}
-	const msgs = document.getElementById("messages");
-	msgs.appendChild(LI({className: "channel-" + extra.channel}, [
+	msgs.appendChild(LI({"data-channel": extra.channel}, [
 		SPAN({className: "username"}, user),
 		": ",
 		SPAN({className: "message"}, message),
 	]));
-	setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+	scroll_down();
 };
 
 document.getElementById("send_whisper").onsubmit = function(e) {

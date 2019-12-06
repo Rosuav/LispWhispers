@@ -35,23 +35,12 @@ li.heading {
 	margin-bottom: 0.5em;
 }
 
-/* Can this be generalized? If so, have all of them invisible except the
-ones from the chosen channel. The comma-terminated lines need to be generated
-for every channel that has a radio button; the rest stays the same.
-
-<input type=radio checked name=channel id=merged><label for=merged>(all)</label>
-<input type=radio name=channel id=rb-mustardmine><label for=rb-mustardmine>Mustard Mine</label>
-<input type=radio name=channel id=rb-loudlotus><label for=rb-loudlotus>Loud Lotus</label>
-
-#messages li {display: none;}
-
-#rb-loudlotus:checked ~ ul li[class~=channel-loudlotus],
-#rb-mustardmine:checked ~ ul li[class~=channel-mustardmine],
-#merged:checked ~ ul li {
-	display: list-item;
-}
-*/
+li.hidden {display: none;}
 
 .username {
 	font-weight: bold;
+}
+
+nav label {
+	cursor: pointer;
 }

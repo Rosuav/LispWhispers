@@ -3,10 +3,6 @@ Lisp Whispers
 
 Simple web page permitting you to view your Twitch whispers while live.
 
-- Show all whispers by default
-  - Optionally separate them out by origin
-  - See CSS for notes on how to do this; I don't think it's possible w/o some
-    dynamically-generated CSS
 - Retain the last X whispers seen
   - Is there a way to query Twitch for whisper history?
     - The Twitch UI uses gql for this, so there probably isn't any documented way.
