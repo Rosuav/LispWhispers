@@ -28,6 +28,13 @@ main > #messages {
 	vertical-align: middle;
 }
 
+li.heading {
+	list-style-type: none;
+	font-size: 2em;
+	font-weight: bold;
+	margin-bottom: 0.5em;
+}
+
 /* Can this be generalized? If so, have all of them invisible except the
 ones from the chosen channel. The comma-terminated lines need to be generated
 for every channel that has a radio button; the rest stays the same.
