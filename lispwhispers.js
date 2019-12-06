@@ -32,9 +32,10 @@ ComfyJS.onError = error => {
 const msgs = document.getElementById("messages");
 function scroll_down() {setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);};
 
-function filter_messages(username) {
+function filter_messages(username, displayname) {
 	document.querySelectorAll("#messages li").forEach(li =>
 		li.classList.toggle("hidden", !!(li.dataset.channel && li.dataset.channel !== username)));
+	document.getElementById("send_whisper").elements.recipient.value = displayname;
 	scroll_down();
 }
 
@@ -54,7 +55,7 @@ function add_recipient(displayname, username) {
 	if (!user_filters[username])
 	{
 		document.querySelector("nav").appendChild(user_filters[username] = LABEL([
-			INPUT({type: "radio", name: "channel", onchange: () => filter_messages(username)}),
+			INPUT({type: "radio", name: "channel", onchange: () => filter_messages(username, displayname)}),
 			displayname,
 		]));
 	}
@@ -95,6 +96,9 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 		}
 		message.push(text);
 	}
+	//TODO: If a whisper comes in and you're filtered to some other channel,
+	//what should happen? Currently it shows it anyway (definitely wrong
+	//behaviour). Should it flick to the other channel? Highlight it somehow?
 	msgs.appendChild(LI({"data-channel": extra.channel}, [
 		SPAN({className: "username"}, user),
 		": ",
