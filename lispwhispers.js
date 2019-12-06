@@ -73,12 +73,13 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 		}
 		message.push(text);
 	}
-	document.getElementById("messages").appendChild(LI({className: "channel-" + extra.channel}, [
+	const msgs = document.getElementById("messages");
+	msgs.appendChild(LI({className: "channel-" + extra.channel}, [
 		SPAN({className: "username"}, user),
 		": ",
 		SPAN({className: "message"}, message),
 	]));
-	setTimeout(() => document.getElementById("send_whisper").scrollIntoView(false), 10);
+	setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
 };
 
 document.getElementById("send_whisper").onsubmit = function(e) {

@@ -39,5 +39,4 @@ Simple web page permitting you to view your Twitch whispers while live.
   - As there's no server, all this configuration will be kept in LocalStorage.
     Offer a way to download a backup file, or to copy a backup to clipboard.
   - Does Chrome have facilities for synchronized storage??
-- TODO: Pin the send box to the floor and have a separate scroll container
 - TODO (locally): Create a popup link like for dashboard. Provide example?
