@@ -3,6 +3,9 @@ Lisp Whispers
 
 Simple web page permitting you to view your Twitch whispers while live.
 
+TIP: Open a popup window with minimal chrome
+[with this link](javascript:window.open('https://rosuav.github.io/LispWhispers/', 'whispers', 'width=600, height=400')").
+
 - Retain the last X whispers seen
   - Is there a way to query Twitch for whisper history?
     - The Twitch UI uses gql for this, so there probably isn't any documented way.
@@ -34,4 +37,3 @@ Simple web page permitting you to view your Twitch whispers while live.
   - Quick re-send in case you sent to the wrong name (or you're multisending).
   - As there's no server, all this configuration will be kept in LocalStorage.
     Offer a way to download a backup file, or to copy a backup to clipboard.
-- TODO (locally): Create a popup link like for dashboard. Provide example?
