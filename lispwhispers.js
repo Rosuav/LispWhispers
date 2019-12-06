@@ -118,7 +118,7 @@ document.getElementById("send_whisper").onsubmit = function(e) {
 	//TODO: Retain the message somewhere for quick-resend (eg if recip wrong)
 	this.elements.message.value = "";
 	this.elements.message.focus();
-	add_recipient(recip);
+	add_recipient(recip, recip.toLowerCase()); //TODO: Find out the *actual* username and display name
 };
 
 /* TODO: Config dialog. Probably use <dialog> itself.
