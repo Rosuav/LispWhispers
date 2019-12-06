@@ -100,7 +100,7 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//what should happen? Currently it shows it anyway (definitely wrong
 	//behaviour). Should it flick to the other channel? Highlight it somehow?
 	msgs.appendChild(LI({"data-channel": extra.channel}, [
-		SPAN({className: "username"}, user),
+		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, user),
 		": ",
 		SPAN({className: "message"}, message),
 	]));
