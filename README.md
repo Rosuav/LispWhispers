@@ -3,8 +3,8 @@ Lisp Whispers
 
 Simple web page permitting you to view your Twitch whispers while live.
 
-TIP: Open a popup window with minimal chrome
-[with this link](javascript:window.open('https://rosuav.github.io/LispWhispers/', 'whispers', 'width=600, height=400')").
+TIP: Open a popup window with minimal chrome with this link:
+    `javascript:window.open('https://rosuav.github.io/LispWhispers/', 'whispers', 'width=600, height=400')`
 
 - Retain the last X whispers seen
   - Is there a way to query Twitch for whisper history?
