@@ -6,19 +6,16 @@ Simple web page permitting you to view your Twitch whispers while live.
 TIP: Open a popup window with minimal chrome with this link:
     `javascript:window.open('https://rosuav.github.io/LispWhispers/', 'whispers', 'width=600, height=400')`
 
-- Retain the last X whispers seen
-  - Is there a way to query Twitch for whisper history?
-    - The Twitch UI uses gql for this, so there probably isn't any documented way.
-  - If not, retain only for the current session
-  - It'll be wonky anyway w/o that query, so just accept the wonk
-- Mark the window Urgent on new whisper (if possible)
-- Available on GH Pages: https://rosuav.github.io/LispWhispers/
+Available on GH Pages: https://rosuav.github.io/LispWhispers/
   - Uses [ComfyJS](https://github.com/instafluff/ComfyJS) for connectivity
   - Uses [Choc Factory](https://github.com/Rosuav/shed/blob/master/chocfactory.js)
     for rendering
   - Auth is stored in LocalStorage (TODO: tell the user this)
-- Note: Local testing requires a web server (eg `python3 -m http.server`).
-- TODO: Also show highlighted messages in the streamer's channel?
+  - Note: Local testing requires a web server (eg `python3 -m http.server`).
+
+TODO:
+- Mark the window Urgent on new whisper (if possible)
+- Also show highlighted messages in the streamer's channel?
 - Sending of whispers.
   - Type a recipient name, or use a drop-down of "likely recipients"
     - By default, adds to recipients when a whisper arrives.
