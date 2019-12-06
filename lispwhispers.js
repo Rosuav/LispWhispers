@@ -134,6 +134,10 @@ async function init()
 if (window.location.hash === "#hack")
 {
 	const data = window.localStorage.getItem("last_received");
-	if (data) {const {user, message, flags, self, extra} = JSON.parse(data); ComfyJS.onWhisper(user, message, flags, self, extra);}
+	if (data)
+	{
+		const {user, message, flags, self, extra} = JSON.parse(data);
+		for (let i = 0; i < 20; ++i) ComfyJS.onWhisper(user, message, flags, self, extra);
+	}
 }
 else init();
