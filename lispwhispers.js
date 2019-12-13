@@ -130,6 +130,21 @@ Needs to show all the config settings currently used, and allow easy backup and 
 Perhaps, as changes are made, it should dynamically show the JSON in a textarea??
 */
 
+function show_config()
+{
+	const dlg = document.getElementById("configdlg");
+	if (localStorage.getItem("lispwhispers_access_key"))
+	{
+		//Yes, you might see "Logged in as undefined" if the two are out of sync.
+		//No, I don't care.
+		set_content("#cfg_auth", "Logged in as " + localStorage.getItem("lispwhispers_username"));
+		document.getElementById("clear_auth").disabled = false;
+	}
+	document.getElementById("cfg_json").value = JSON.stringify(config);
+	dlg.show();
+}
+window.show_config = show_config;
+
 async function init()
 {
 	const stored_token = window.localStorage.getItem("lispwhispers_access_key");

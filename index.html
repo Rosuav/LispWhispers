@@ -16,7 +16,12 @@
 <datalist id=recipients></datalist>
 <dialog id=configdlg>
 <button type=button class=dialog_cancel>x</button>
-
+<ul>
+<li>Authentication: <span id=cfg_auth>["None" or username]</span> <button type=button id=clear_auth disabled>Clear</button></li>
+<li>TODO: Saved recipients</li>
+</ul>
+<textarea id=cfg_json></textarea><br>
+<button type=button id=save_cfg>Save</button>
 </dialog>
 </main>
 </body>
