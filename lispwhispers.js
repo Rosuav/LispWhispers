@@ -68,6 +68,7 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
 	if (!self) add_recipient(user, extra.channel, true); //Don't add self to recent recipients :)
+	else user = "To: " + (user_info[extra.channel] || {displayname: extra.channel}).displayname;
 
 	if (extra.messageEmotes)
 	{
