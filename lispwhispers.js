@@ -8,12 +8,14 @@ if (typeof config !== "object") config = {};
 function save_config() {window.localStorage.setItem("lispwhispers_config", JSON.stringify(config));}
 if (!config.recent_recip) config.recent_recip = [];
 
+const user_info = {};
+
 function update_recipient_list() {
 	let recip = config.standard_recip || [];
 	let map = {}; recip.forEach(r => map[r] = 1);
 	config.recent_recip.forEach(r => map[r] || recip.push(r));
 	if (config.sort_recipients) recip.sort();
-	set_content("#recipients", recip.map(OPTION));
+	set_content("#recipients", recip.map(r => OPTION(user_info[r].displayname)));
 }
 
 let active = false; //True if we (appear to) have a connection, false on critical error
@@ -44,28 +46,28 @@ document.getElementById("merged").onchange = () => {
 	scroll_down();
 }
 
-const user_filters = {};
-function add_recipient(displayname, username) {
-	//TODO: If you send, retain case from a previously-seen entry.
-	//But if you receive, override previously-seen entries with the
-	//case from the new one (as currently happens).
-	config.recent_recip = config.recent_recip.filter(r => r.toLowerCase() !== displayname.toLowerCase());
+function add_recipient(displayname, username, update) {
+	const lcuser = displayname.toLowerCase();
+	config.recent_recip = config.recent_recip.filter(r => r !== lcuser);
 	if (config.recent_recip.length > 10) config.recent_recip = config.recent_recip.slice(1);
-	config.recent_recip.push(displayname);
-	if (!user_filters[username])
+	config.recent_recip.push(lcuser);
+	if (!user_info[lcuser])
 	{
-		document.querySelector("nav").appendChild(user_filters[username] = LABEL([
+		document.querySelector("nav").appendChild(LABEL([
 			INPUT({type: "radio", name: "channel", onchange: () => filter_messages(username, displayname)}),
+			//TODO: Update this if the case changes
 			displayname,
 		]));
+		user_info[lcuser] = {displayname, username};
 	}
+	else if (update) Object.assign(user_info[lcuser], {displayname, username});
 	update_recipient_list();
 }
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
-	if (!self) add_recipient(user, extra.channel); //Don't add self to recent recipients :)
+	if (!self) add_recipient(user, extra.channel, true); //Don't add self to recent recipients :)
 
 	if (extra.messageEmotes)
 	{
@@ -118,7 +120,7 @@ document.getElementById("send_whisper").onsubmit = function(e) {
 	//TODO: Retain the message somewhere for quick-resend (eg if recip wrong)
 	this.elements.message.value = "";
 	this.elements.message.focus();
-	add_recipient(recip, recip.toLowerCase()); //TODO: Find out the *actual* username and display name
+	add_recipient(recip, recip.toLowerCase(), false); //TODO: Find out the *actual* username and display name
 };
 
 /* TODO: Config dialog. Probably use <dialog> itself.
