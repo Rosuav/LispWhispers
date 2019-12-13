@@ -170,3 +170,12 @@ if (window.location.hash === "#hack")
 	}
 }
 else init();
+
+//For browsers with only partial support for the <dialog> tag, add the barest minimum.
+//On browsers with full support, there are many advantages to using dialog rather than
+//plain old div, but this way, other browsers at least have it pop up and down.
+document.querySelectorAll("dialog").forEach(dlg => {
+	if (!dlg.showModal) dlg.showModal = function() {this.style.display = "block";}
+	if (!dlg.close) dlg.close = function() {this.style.removeProperty("display");}
+});
+document.querySelectorAll(".dialog_cancel").forEach(el => el.onclick = function() {this.parentElement.close();});

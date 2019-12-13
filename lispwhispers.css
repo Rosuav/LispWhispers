@@ -44,3 +44,20 @@ li.hidden {display: none;}
 nav label {
 	cursor: pointer;
 }
+
+dialog {
+	position: fixed;
+	width: 30em; height: 20em;
+	top: calc(50% - 15em);
+	left: calc(50% - 10em);
+	bottom: calc(50% - 15em);
+	right: calc(50% - 10em);
+	border: 5px solid black;
+	padding: 1em;
+	overflow: auto;
+}
+
+.dialog_cancel {
+	position: absolute;
+	right: 1em; top: 1em;
+}
