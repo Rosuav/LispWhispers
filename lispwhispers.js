@@ -1,5 +1,5 @@
 import choc, {set_content} from "https://rosuav.github.io/shed/chocfactory.js";
-import "./comfy.js"; const ComfyJS = window.ComfyJS;
+import "https://cdn.jsdelivr.net/npm/comfy.js/dist/comfy.min.js"; const ComfyJS = window.ComfyJS;
 const {A, IMG, INPUT, LABEL, LI, OPTION, OPTGROUP, SPAN} = choc;
 
 let config = {};
