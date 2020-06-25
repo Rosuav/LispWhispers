@@ -102,11 +102,14 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//TODO: If a whisper comes in and you're filtered to some other channel,
 	//what should happen? Currently it shows it anyway (definitely wrong
 	//behaviour). Should it flick to the other channel? Highlight it somehow?
-	msgs.appendChild(LI({"data-channel": extra.channel}, [
+	const li = LI({"data-channel": extra.channel, className: "new"}, [
 		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, user),
 		": ",
 		SPAN({className: "message"}, message),
-	]));
+	]);
+	msgs.appendChild(li);
+	//Five seconds after it got added, start fading the highlight (over sixty seconds)
+	setTimeout(() => li.classList.remove("new"), 5000);
 	scroll_down();
 };
 
