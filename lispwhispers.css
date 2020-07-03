@@ -34,8 +34,6 @@ li:not(.heading) {
 	transition: all 60s;
 	border: 1px solid transparent;
 	max-width: max-content;
-	margin-bottom: 1em;
-	padding: 0.5em;
 }
 li.new {
 	background-color: #efe;
