@@ -221,7 +221,7 @@ async function init()
 		return;
 	}
 	let username = window.localStorage.getItem("lispwhispers_username");
-	set_content("li.heading", "Lisp Whispers for " + username + (rewardid ? ", with cam shift" : ""));
+	set_content("li.heading", "Lisp Whispers for " + username + (rewardid ? ", camhack" : ""));
 	ComfyJS.Init(username, token);
 }
 
