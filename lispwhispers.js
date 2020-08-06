@@ -119,6 +119,7 @@ const rewardid = params.get("rewardid");
 if (rewardid) ComfyJS.onChat = ( user, message, flags, self, extra ) => {
 	if (!flags.customReward) return;
 	if (extra.customRewardId !== rewardid) return;
+	//To figure out the appropriate rewardid, use OSDRewards and try it out
 	console.log("Got magic reward: " + message);
 	const socket = new WebSocket("ws://localhost:4444"); //Hard-coded for simplicity. Also, has to be passwordless.
 	socket.onopen = () => {
