@@ -66,6 +66,19 @@ function add_recipient(displayname, username, update) {
 	update_recipient_list();
 }
 
+ComfyJS.onHosted = (username, viewers, autohost, extra) => {
+	//Hack to see if we can recognize hosts vs autohosts
+	console.log("HOST:", username, viewers, autohost, extra);
+	const li = LI({className: "new"}, [
+		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, username),
+		` ${autohost}-hosted you for ${viewers} viewers`,
+	]);
+	msgs.appendChild(li);
+	//Five seconds after it got added, start fading the highlight (over sixty seconds)
+	setTimeout(() => li.classList.remove("new"), 5000);
+	scroll_down();
+};
+
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
 	//window.localStorage.setItem("last_received", JSON.stringify({user, message, flags, self, extra})); //For #hack
