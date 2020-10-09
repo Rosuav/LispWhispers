@@ -111,10 +111,12 @@ async function hostpoll() {
 			case 2: msg = `${names[0]} and ${names[1]} are ${desc} you.`; break;
 			default: msg = `${names.length} channels are ${desc} you: ${names.join(", ")}`; break;
 		}
-		const li = LI({className: "new"}, msg);
-		msgs.appendChild(li);
-		setTimeout(() => li.classList.remove("new"), 60000);
-		scroll_down();
+		if (msg) {
+			const li = LI({className: "new"}, msg);
+			msgs.appendChild(li);
+			setTimeout(() => li.classList.remove("new"), 60000);
+			scroll_down();
+		}
 
 		//After the startup display, guess that any new hosts are autohosts
 		//Non-auto hosts should be caught by the ComfyJS hook.
