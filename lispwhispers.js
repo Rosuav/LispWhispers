@@ -66,9 +66,12 @@ function add_recipient(displayname, username, update) {
 	update_recipient_list();
 }
 
+const hosts = { };
 ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	//Hack to see if we can recognize hosts vs autohosts
 	console.log("HOST:", username, viewers, autohost, extra);
+	const age = +new Date - (hosts[username]||0);
+	if (age < 86400000) return; //Rehosting doesn't count (but expire them after a day in case the page is left up all the time)
 	const li = LI({className: "new"}, [
 		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, username),
 		` ${autohost ? "auto" : ""}hosted you for ${viewers} viewers`,
