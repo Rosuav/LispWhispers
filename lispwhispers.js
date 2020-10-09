@@ -69,11 +69,14 @@ function add_recipient(displayname, username, update) {
 const hosts = { };
 ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	//Hack to see if we can recognize hosts vs autohosts
-	console.log("HOST:", username, viewers, autohost, extra);
+	//Note that ComfyJS itself never seems to announce autohosts. It also
+	//doesn't provide the displayname, so we fall back on the username.
 	const age = +new Date - (hosts[username]||0);
 	if (age < 86400000) return; //Rehosting doesn't count (but expire them after a day in case the page is left up all the time)
+	hosts[username] = +new Date;
+	console.log("HOST:", username, viewers, autohost, extra);
 	const li = LI({className: "new"}, [
-		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, username),
+		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, extra.displayname || username),
 		` ${autohost ? "auto" : ""}hosted you for ${viewers} viewers`,
 	]);
 	msgs.appendChild(li);
@@ -81,6 +84,26 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	setTimeout(() => li.classList.remove("new"), 60000);
 	scroll_down();
 };
+
+async function hostpoll() {
+	let userid = window.localStorage.getItem("lispwhispers_userid");
+	if (!userid) //Shouldn't happen long-term but older LispWhispers didn't record the ID
+	{
+		console.log("Fetching userid...");
+		const info = await (await fetch("https://id.twitch.tv/oauth2/validate",
+			{headers: {"Authorization": "OAuth " + token}})).json();
+		window.localStorage.setItem("lispwhispers_userid", userid = info.user_id);
+	}
+	while (1) {
+		const hosts = await (await fetch("https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=" + userid)).json();
+		for (let host of hosts.hosts) {
+			//Let the onHosted callback check if they're already in the list
+			ComfyJS.onHosted(host.host_login, "unknown", true, {displayname: host.host_display_name});
+		}
+		//Not using setInterval since we want to actually wait even if the calls take a long time
+		await new Promise(f => setTimeout(f, 30000));
+	}
+}
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//console.log("Received whisper from", user); console.log(message, flags, self, extra);
@@ -224,8 +247,9 @@ async function init()
 			const info = await (await fetch("https://id.twitch.tv/oauth2/validate",
 				{headers: {"Authorization": "OAuth " + token}})).json();
 			window.localStorage.setItem("lispwhispers_username", info.login);
+			window.localStorage.setItem("lispwhispers_userid", info.user_id);
 			if (!info.login) token = null;
-			else console.log("Logged in as", info.login);
+			else console.log("Logged in as", info.user_id, info.login);
 		}
 	}
 	else token = stored_token;
@@ -240,6 +264,7 @@ async function init()
 	let username = window.localStorage.getItem("lispwhispers_username");
 	set_content("li.heading", "Lisp Whispers for " + username + (rewardid ? " + camhack" : ""));
 	ComfyJS.Init(username, token);
+	if (window.localStorage.getItem("lispwhispers_hosthack")) hostpoll();
 }
 
 if (window.location.hash === "#hack")
