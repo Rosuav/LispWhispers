@@ -71,11 +71,11 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	console.log("HOST:", username, viewers, autohost, extra);
 	const li = LI({className: "new"}, [
 		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, username),
-		` ${autohost}-hosted you for ${viewers} viewers`,
+		` ${autohost ? "auto" : ""}hosted you for ${viewers} viewers`,
 	]);
 	msgs.appendChild(li);
-	//Five seconds after it got added, start fading the highlight (over sixty seconds)
-	setTimeout(() => li.classList.remove("new"), 5000);
+	//These ones stay for a full minute before starting to fade. (TODO: Should they?)
+	setTimeout(() => li.classList.remove("new"), 60000);
 	scroll_down();
 };
 
