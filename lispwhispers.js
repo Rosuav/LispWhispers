@@ -66,14 +66,14 @@ function add_recipient(displayname, username, update) {
 	update_recipient_list();
 }
 
-const hosts = { };
+const current_hosts = { };
 ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	//Hack to see if we can recognize hosts vs autohosts
 	//Note that ComfyJS itself never seems to announce autohosts. It also
 	//doesn't provide the displayname, so we fall back on the username.
-	const age = +new Date - (hosts[username]||0);
+	const age = +new Date - (current_hosts[username]||0);
 	if (age < 86400000) return; //Rehosting doesn't count (but expire them after a day in case the page is left up all the time)
-	hosts[username] = +new Date;
+	current_hosts[username] = +new Date;
 	console.log("HOST:", username, viewers, autohost, extra);
 	const li = LI({className: "new"}, [
 		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, extra.displayname || username),
@@ -94,12 +94,32 @@ async function hostpoll() {
 			{headers: {"Authorization": "OAuth " + token}})).json();
 		window.localStorage.setItem("lispwhispers_userid", userid = info.user_id);
 	}
+	let desc = "currently hosting";
 	while (1) {
 		const hosts = await (await fetch("https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=" + userid)).json();
+		const names = [];
 		for (let host of hosts.hosts) {
-			//Let the onHosted callback check if they're already in the list
-			ComfyJS.onHosted(host.host_login, "unknown", true, {displayname: host.host_display_name});
+			const age = +new Date - (current_hosts[host.host_login]||0);
+			if (age < 86400000) continue; //Already hosting (or has previously been hosting)
+			current_hosts[host.host_login] = +new Date;
+			names.push(host.host_display_name);
 		}
+		let msg;
+		switch (names.length) {
+			case 0: break; //No new hosts - common case
+			case 1: msg = `${names[0]} is ${desc} you.`; break;
+			case 2: msg = `${names[0]} and ${names[1]} are ${desc} you.`; break;
+			default: msg = `${names.length} channels are ${desc} you: ${names.join(", ")}`; break;
+		}
+		const li = LI({className: "new"}, msg);
+		msgs.appendChild(li);
+		setTimeout(() => li.classList.remove("new"), 60000);
+		scroll_down();
+
+		//After the startup display, guess that any new hosts are autohosts
+		//Non-auto hosts should be caught by the ComfyJS hook.
+		desc = "now autohosting";
+
 		//Not using setInterval since we want to actually wait even if the calls take a long time
 		await new Promise(f => setTimeout(f, 30000));
 	}
