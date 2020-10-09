@@ -89,6 +89,8 @@ async function hostpoll() {
 	let userid = window.localStorage.getItem("lispwhispers_userid");
 	if (!userid) //Shouldn't happen long-term but older LispWhispers didn't record the ID
 	{
+		const token = window.localStorage.getItem("lispwhispers_access_key");
+		if (!token) return; //Can't show hosts without knowing who we are.
 		console.log("Fetching userid...");
 		const info = await (await fetch("https://id.twitch.tv/oauth2/validate",
 			{headers: {"Authorization": "OAuth " + token}})).json();
