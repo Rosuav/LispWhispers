@@ -116,8 +116,9 @@ async function hostpoll() {
 	if (hosts_only) {
 		userid = params.get("channelid");
 		if (!userid) {
-			//TODO: Look up a channel name and get the ID
-			console.error("Unimplemented: get channel by name");
+			//Need to look up a channel name and get the ID. Beg StilleBot to help us out here.
+			console.info("Need a channel to monitor - sending you to Sikorsky");
+			window.location.href = "https://sikorsky.rosuav.com/hostviewer";
 			return;
 		}
 	}
