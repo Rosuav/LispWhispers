@@ -4,6 +4,8 @@ const {A, IMG, INPUT, LABEL, LI, OPTION, OPTGROUP, SPAN} = choc;
 
 const params = new URLSearchParams(window.location.search);
 
+const hosts_only = window.location.pathname.includes("/hosts");
+
 let config = {};
 try {config = JSON.parse(window.localStorage.getItem("lispwhispers_config")) || {};} catch (e) { }
 if (typeof config !== "object") config = {};
@@ -43,7 +45,7 @@ function filter_messages(username, displayname) {
 	scroll_down();
 }
 
-document.getElementById("merged").onchange = () => {
+if (!hosts_only) document.getElementById("merged").onchange = () => {
 	document.querySelectorAll("#messages li").forEach(li => li.classList.remove("hidden"));
 	scroll_down();
 }
@@ -110,15 +112,26 @@ async function checkhosts(userid, desc) {
 }
 
 async function hostpoll() {
-	let userid = window.localStorage.getItem("lispwhispers_userid");
-	if (!userid) //Shouldn't happen long-term but older LispWhispers didn't record the ID
-	{
-		const token = window.localStorage.getItem("lispwhispers_access_key");
-		if (!token) return; //Can't show hosts without knowing who we are.
-		console.log("Fetching userid...");
-		const info = await (await fetch("https://id.twitch.tv/oauth2/validate",
-			{headers: {"Authorization": "OAuth " + token}})).json();
-		window.localStorage.setItem("lispwhispers_userid", userid = info.user_id);
+	let userid;
+	if (hosts_only) {
+		userid = params.get("channelid");
+		if (!userid) {
+			//TODO: Look up a channel name and get the ID
+			console.error("Unimplemented: get channel by name");
+			return;
+		}
+	}
+	else {
+		userid = window.localStorage.getItem("lispwhispers_userid");
+		if (!userid) //Shouldn't happen long-term but older LispWhispers didn't record the ID
+		{
+			const token = window.localStorage.getItem("lispwhispers_access_key");
+			if (!token) return; //Can't show hosts without knowing who we are.
+			console.log("Fetching userid...");
+			const info = await (await fetch("https://id.twitch.tv/oauth2/validate",
+				{headers: {"Authorization": "OAuth " + token}})).json();
+			window.localStorage.setItem("lispwhispers_userid", userid = info.user_id);
+		}
 	}
 	checkhosts(userid, "currently hosting"); //Grab any current hosts
 	//After the startup display, guess that any new hosts are autohosts
@@ -220,7 +233,7 @@ if (rewardid) ComfyJS.onChat = ( user, message, flags, self, extra ) => {
 	};
 }
 
-document.getElementById("send_whisper").onsubmit = function(e) {
+if (!hosts_only) document.getElementById("send_whisper").onsubmit = function(e) {
 	e.preventDefault();
 	const recip = this.elements.recipient.value;
 	const msg = this.elements.message.value;
@@ -288,7 +301,8 @@ async function init()
 	if (window.localStorage.getItem("lispwhispers_hosthack")) hostpoll();
 }
 
-if (window.location.hash === "#hack")
+if (hosts_only) hostpoll();
+else if (window.location.hash === "#hack")
 {
 	const data = window.localStorage.getItem("last_received");
 	if (data)
