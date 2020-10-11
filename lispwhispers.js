@@ -85,6 +85,30 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	scroll_down();
 };
 
+async function checkhosts(userid, desc) {
+	const hosts = await (await fetch("https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=" + userid)).json();
+	const names = [];
+	for (let host of hosts.hosts) {
+		const age = +new Date - (current_hosts[host.host_login]||0);
+		if (age < 86400000) continue; //Already hosting (or has previously been hosting)
+		current_hosts[host.host_login] = +new Date;
+		names.push(host.host_display_name);
+	}
+	let msg;
+	switch (names.length) {
+		case 0: break; //No new hosts - common case
+		case 1: msg = `${names[0]} is ${desc} you.`; break;
+		case 2: msg = `${names[0]} and ${names[1]} are ${desc} you.`; break;
+		default: msg = `${names.length} channels are ${desc} you: ${names.join(", ")}`; break;
+	}
+	if (msg) {
+		const li = LI({className: "new"}, msg);
+		msgs.appendChild(li);
+		setTimeout(() => li.classList.remove("new"), 60000);
+		scroll_down();
+	}
+}
+
 async function hostpoll() {
 	let userid = window.localStorage.getItem("lispwhispers_userid");
 	if (!userid) //Shouldn't happen long-term but older LispWhispers didn't record the ID
@@ -96,37 +120,10 @@ async function hostpoll() {
 			{headers: {"Authorization": "OAuth " + token}})).json();
 		window.localStorage.setItem("lispwhispers_userid", userid = info.user_id);
 	}
-	let desc = "currently hosting";
-	while (1) {
-		const hosts = await (await fetch("https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=" + userid)).json();
-		const names = [];
-		for (let host of hosts.hosts) {
-			const age = +new Date - (current_hosts[host.host_login]||0);
-			if (age < 86400000) continue; //Already hosting (or has previously been hosting)
-			current_hosts[host.host_login] = +new Date;
-			names.push(host.host_display_name);
-		}
-		let msg;
-		switch (names.length) {
-			case 0: break; //No new hosts - common case
-			case 1: msg = `${names[0]} is ${desc} you.`; break;
-			case 2: msg = `${names[0]} and ${names[1]} are ${desc} you.`; break;
-			default: msg = `${names.length} channels are ${desc} you: ${names.join(", ")}`; break;
-		}
-		if (msg) {
-			const li = LI({className: "new"}, msg);
-			msgs.appendChild(li);
-			setTimeout(() => li.classList.remove("new"), 60000);
-			scroll_down();
-		}
-
-		//After the startup display, guess that any new hosts are autohosts
-		//Non-auto hosts should be caught by the ComfyJS hook.
-		desc = "now autohosting";
-
-		//Not using setInterval since we want to actually wait even if the calls take a long time
-		await new Promise(f => setTimeout(f, 30000));
-	}
+	checkhosts(userid, "currently hosting"); //Grab any current hosts
+	//After the startup display, guess that any new hosts are autohosts
+	//Non-auto hosts should be caught by the ComfyJS hook.
+	setInterval(checkhosts, 30000, userid, "now autohosting");
 }
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
