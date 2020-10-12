@@ -90,10 +90,11 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 async function checkhosts(userid, desc) {
 	const hosts = await (await fetch("https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=" + userid)).json();
 	const names = [];
+	const now = new Date; //Consistent definition of current timestamp
 	for (let host of hosts.hosts) {
-		const age = +new Date - (current_hosts[host.host_login]||0);
+		const age = +now - (current_hosts[host.host_login]||0);
 		if (age < 86400000) continue; //Already hosting (or has previously been hosting)
-		current_hosts[host.host_login] = +new Date;
+		current_hosts[host.host_login] = +now;
 		names.push(host.host_display_name);
 	}
 	let msg;
@@ -104,7 +105,8 @@ async function checkhosts(userid, desc) {
 		default: msg = `${names.length} channels are ${desc} you: ${names.join(", ")}`; break;
 	}
 	if (msg) {
-		const li = LI({className: "new"}, msg);
+		//TODO: For a11y compliance, make it possible to put the timestamp into the text
+		const li = LI({className: "new", title: now.toLocaleDateString() + " " + now.toLocaleTimeString()}, msg);
 		msgs.appendChild(li);
 		setTimeout(() => li.classList.remove("new"), 60000);
 		scroll_down();
