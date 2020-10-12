@@ -5,6 +5,9 @@ const {A, IMG, INPUT, LABEL, LI, OPTION, OPTGROUP, SPAN} = choc;
 const params = new URLSearchParams(window.location.search);
 
 const hosts_only = window.location.pathname.includes("/hosts");
+//The Twitch server doesn't support CORS, so we need a little CORS bouncer. Take your pick, either will work.
+//const HOST_FETCH_URL = "https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=";
+const HOST_FETCH_URL = "https://sikorsky.rosuav.com/hostviewer?target=";
 
 let config = {};
 try {config = JSON.parse(window.localStorage.getItem("lispwhispers_config")) || {};} catch (e) { }
@@ -89,7 +92,7 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 };
 
 async function checkhosts(userid, desc) {
-	const hosts = await (await fetch("https://cors-anywhere.herokuapp.com/https://tmi.twitch.tv/hosts?include_logins=1&target=" + userid)).json();
+	const hosts = await (await fetch(HOST_FETCH_URL + userid)).json();
 	const names = [];
 	const now = new Date; //Consistent definition of current timestamp
 	for (let host of hosts.hosts) {
