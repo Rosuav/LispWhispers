@@ -73,11 +73,12 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	//Hack to see if we can recognize hosts vs autohosts
 	//Note that ComfyJS itself never seems to announce autohosts. It also
 	//doesn't provide the displayname, so we fall back on the username.
-	const age = +new Date - (current_hosts[username]||0);
+	const now = new Date;
+	const age = +now - (current_hosts[username]||0);
 	if (age < 86400000) return; //Rehosting doesn't count (but expire them after a day in case the page is left up all the time)
-	current_hosts[username] = +new Date;
+	current_hosts[username] = +now;
 	console.log("HOST:", username, viewers, autohost, extra);
-	const li = LI({className: "new"}, [
+	const li = LI({className: "new", title: now.toLocaleDateString() + " " + now.toLocaleTimeString()}, [
 		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, extra.displayname || username),
 		` ${autohost ? "auto" : ""}hosted you for ${viewers} viewers`,
 	]);
@@ -139,7 +140,7 @@ async function hostpoll() {
 	checkhosts(userid, "currently hosting"); //Grab any current hosts
 	//After the startup display, guess that any new hosts are autohosts
 	//Non-auto hosts should be caught by the ComfyJS hook.
-	setInterval(checkhosts, 30000, userid, "now autohosting");
+	setInterval(checkhosts, 30000, userid, hosts_only ? "now hosting" : "now autohosting");
 }
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
@@ -180,7 +181,8 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	//TODO: If a whisper comes in and you're filtered to some other channel,
 	//what should happen? Currently it shows it anyway (definitely wrong
 	//behaviour). Should it flick to the other channel? Highlight it somehow?
-	const li = LI({"data-channel": extra.channel, className: "new"}, [
+	const now = new Date;
+	const li = LI({"data-channel": extra.channel, className: "new", title: now.toLocaleDateString() + " " + now.toLocaleTimeString()}, [
 		SPAN({className: "username", "style": extra.userColor ? "color: " + extra.userColor : ""}, user),
 		": ",
 		SPAN({className: "message"}, message),
