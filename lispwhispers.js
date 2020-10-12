@@ -91,7 +91,7 @@ ComfyJS.onHosted = (username, viewers, autohost, extra) => {
 	scroll_down();
 };
 
-async function checkhosts(userid, desc) {
+async function checkhosts(userid, channel, desc) {
 	const hosts = await (await fetch(HOST_FETCH_URL + userid)).json();
 	const names = [];
 	const now = new Date; //Consistent definition of current timestamp
@@ -104,9 +104,9 @@ async function checkhosts(userid, desc) {
 	let msg;
 	switch (names.length) {
 		case 0: break; //No new hosts - common case
-		case 1: msg = `${names[0]} is ${desc} you.`; break;
-		case 2: msg = `${names[0]} and ${names[1]} are ${desc} you.`; break;
-		default: msg = `${names.length} channels are ${desc} you: ${names.join(", ")}`; break;
+		case 1: msg = `${names[0]} is ${desc} ${channel}.`; break;
+		case 2: msg = `${names[0]} and ${names[1]} are ${desc} ${channel}.`; break;
+		default: msg = `${names.length} channels are ${desc} ${channel}: ${names.join(", ")}`; break;
 	}
 	if (msg) {
 		//TODO: For a11y compliance, make it possible to put the timestamp into the text
@@ -118,7 +118,7 @@ async function checkhosts(userid, desc) {
 }
 
 async function hostpoll() {
-	let userid;
+	let userid, channel = "you";
 	if (hosts_only) {
 		userid = params.get("channelid");
 		if (!userid) {
@@ -127,6 +127,7 @@ async function hostpoll() {
 			window.location.href = "https://sikorsky.rosuav.com/hostviewer";
 			return;
 		}
+		channel = params.get("channelname") || "you";
 	}
 	else {
 		userid = window.localStorage.getItem("lispwhispers_userid");
@@ -140,10 +141,10 @@ async function hostpoll() {
 			window.localStorage.setItem("lispwhispers_userid", userid = info.user_id);
 		}
 	}
-	checkhosts(userid, "currently hosting"); //Grab any current hosts
+	checkhosts(userid, channel, "currently hosting"); //Grab any current hosts
 	//After the startup display, guess that any new hosts are autohosts
 	//Non-auto hosts should be caught by the ComfyJS hook.
-	setInterval(checkhosts, 30000, userid, hosts_only ? "now hosting" : "now autohosting");
+	setInterval(checkhosts, 30000, userid, channel, hosts_only ? "now hosting" : "now autohosting");
 }
 
 ComfyJS.onWhisper = (user, message, flags, self, extra) => {
