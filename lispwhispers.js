@@ -307,7 +307,7 @@ async function init()
 	let username = window.localStorage.getItem("lispwhispers_username");
 	set_content("li.heading", "Lisp Whispers for " + username + (rewardid ? " + camhack" : ""));
 	ComfyJS.Init(username, token);
-	if (window.localStorage.getItem("lispwhispers_hosthack")) hostpoll();
+	if (params.get("showhosts")) hostpoll();
 }
 
 if (hosts_only) hostpoll();
