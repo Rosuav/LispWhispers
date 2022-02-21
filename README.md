@@ -34,6 +34,9 @@ TODO:
   - Quick re-send in case you sent to the wrong name (or you're multisending).
   - As there's no server, all this configuration will be kept in LocalStorage.
     Offer a way to download a backup file, or to copy a backup to clipboard.
+- Create a host alert widget. Transparent normally, but on host, shows custom
+  image (possibly GIF) and plays sound. Preload both on startup so it doesn't
+  need to be poked. Incorporate custom text - borrow from StilleBot? WS sync?
 
 
 The MIT License (MIT)
