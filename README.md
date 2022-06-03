@@ -34,6 +34,7 @@ TODO:
   - Quick re-send in case you sent to the wrong name (or you're multisending).
   - As there's no server, all this configuration will be kept in LocalStorage.
     Offer a way to download a backup file, or to copy a backup to clipboard.
+- Remove the rewardid hack in favour of doing it via a StilleBot command
 
 
 The MIT License (MIT)
