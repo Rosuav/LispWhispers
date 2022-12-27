@@ -197,51 +197,6 @@ ComfyJS.onWhisper = (user, message, flags, self, extra) => {
 	scroll_down();
 };
 
-const rewardid = params.get("rewardid");
-if (rewardid) ComfyJS.onChat = ( user, message, flags, self, extra ) => {
-	if (!flags.customReward) return;
-	if (extra.customRewardId !== rewardid) return;
-	//To figure out the appropriate rewardid, use OSDRewards and try it out
-	console.log("Got magic reward: " + message);
-	const socket = new WebSocket("ws://localhost:4444"); //Hard-coded for simplicity. Also, has to be passwordless.
-	socket.onopen = () => {
-		console.log("Connected");
-		socket.send(JSON.stringify({"request-type": "GetSceneList", "message-id": "list"}));
-	}
-	socket.onmessage = (ev) => {
-		const data = JSON.parse(ev.data);
-		switch (data["message-id"]) {
-			case "list": {
-				//The logic is: Go through the words in the current scene name.
-				//If you find "left", and the word "right" is in the reward text, replace it.
-				//Ditto the other four.
-				const valid = {left: "right", right: "left", top: "bottom", bottom: "top"};
-				const change = {};
-				//If it's valid to replace "left" with "right" and we find "left" in the message,
-				//then we want to change "right" into "left" in the scene name.
-				message.toLowerCase().split(" ").forEach(word => valid[word] && (change[valid[word]] = word));
-				const scene = data["current-scene"].split(" ")
-					.map(word => change[word] || word)
-					.join(" ");
-				if (scene === data.name) return; //Should we send back a notification?
-				//Dedicated hack because my (Rosuav's) scenes have special markers at the start
-				const scenes = {};
-				data.scenes.forEach(s => scenes[s.name.slice(2)] = s.name);
-				const adjscene = scenes[scene.slice(2)];
-				console.log("Old scene name:", data["current-scene"]);
-				console.log("New scene name:", adjscene);
-				socket.send(JSON.stringify({"request-type": "SetCurrentScene", "scene-name": adjscene, "message-id": "update"}));
-				break;
-			}
-			case "update": socket.close(); break;
-			default: break;
-		}
-	};
-	socket.onclose = () => {
-		console.log("Socket closed");
-	};
-}
-
 if (!hosts_only) document.getElementById("send_whisper").onsubmit = function(e) {
 	e.preventDefault();
 	const recip = this.elements.recipient.value;
@@ -305,7 +260,7 @@ async function init()
 		return;
 	}
 	let username = window.localStorage.getItem("lispwhispers_username");
-	set_content("li.heading", "Lisp Whispers for " + username + (rewardid ? " + camhack" : ""));
+	set_content("li.heading", "Lisp Whispers for " + username);
 	ComfyJS.Init(username, token);
 	if (params.get("showhosts")) hostpoll();
 }
